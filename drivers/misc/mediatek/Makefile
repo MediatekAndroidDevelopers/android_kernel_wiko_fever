@@ -207,3 +207,5 @@ endif
 ifneq ($(LYCONFIG_COMB_FINGERPRINT_SUPPORT),null)
 obj-$(CONFIG_LY_FINGERPRINT)  += fingerprint_ly/
 endif
+
+obj-$(CONFIG_PWR_LOSS_MTK_SPOH) += power-loss-test/
