@@ -1568,7 +1568,29 @@ static int ps_set_delay(u64 ns)
 	return 0;
 }
 
+#ifdef CONFIG_POCKETMOD
+int em3071_pocket_detection_check(void) {
+	struct em3071_priv *obj = em3071_obj;
+	int err = 0;
+	int prox_value = -1;
+        if (!ps_enabled) {
+                ps_enable_nodata(1);
+        }
+        
+	if (obj == NULL) {
+		APS_ERR("pocket_detection_check: em3071_obj is null\n");
+		return 0;
+	}
 
+	err = em3071_read_ps(obj->client, &obj->ps);
+	if (err != 0) {
+		APS_ERR("pocket_detection_check: em3071_read_ps failed err=%d\n", err);
+		return 0;
+	}
+	prox_value = em3071_get_ps_value(obj, obj->ps);
+	return prox_value == 0 ? 0 : 1; //ignore invalid state for now
+}
+#endif
 
 static int ps_get_data(int *value, int *status)
 {

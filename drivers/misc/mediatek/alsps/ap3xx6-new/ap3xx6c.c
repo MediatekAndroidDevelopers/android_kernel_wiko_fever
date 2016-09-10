@@ -1005,7 +1005,7 @@ static int ap3xx6_get_ps_value(struct ap3xx6_priv *obj, u16 ps)
 
 	if (!invalid) {
 		if (atomic_read(&obj->trace) & TRACE_DEBUG) {
-			APS_DBG("PS: %05d => %05d\n", ps, val);
+			APS_ERR("PS: %05d => %05d\n", ps, val);
 		}
 		return val;
 	} else{
@@ -2008,7 +2008,6 @@ static int ap3xx6_ps_enable_nodata(int en)
 	}
 	value = en;
 	if (value) {
-	
 /*
 		err = ap3xx6_enable_ps(obj->client, 1);
 		if (err != 0) {

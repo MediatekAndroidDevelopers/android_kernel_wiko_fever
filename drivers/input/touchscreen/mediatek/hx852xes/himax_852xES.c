@@ -95,6 +95,8 @@ static int self_test_inter_flag = 0;
 #ifdef HX_SMART_WAKEUP
 extern int tpd_gesture_enable_status;
 #endif
+
+extern bool display_off;
 /*
 
 #if defined( CONFIG_FB)
@@ -2075,9 +2077,9 @@ static void himax_ts_button_func(int tp_key_index,struct himax_ts_data *ts)
 {
 	uint16_t x_position = 0, y_position = 0;
 	ts->protocol_type = PROTOCOL_TYPE_A;
-if ( tp_key_index != 0x00)
+if ( tp_key_index != 0x00 && !display_off)
 	{
-		I("virtual key index =%x\n",tp_key_index);
+		I("virtual key index =%x\n",tp_key_index); //TODO: disable virtual hardware buttons (menu, home, back)
 		if ( tp_key_index == 0x01) {
 			vk_press = 1;
 			printk("back key pressed\n");
