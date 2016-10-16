@@ -96,7 +96,13 @@ static int self_test_inter_flag = 0;
 extern int tpd_gesture_enable_status;
 #endif
 
-extern bool display_off;
+#ifdef CONFIG_TOUCHSCREEN_SMARTWAKE
+#include <linux/input/smartwake.h>
+#endif
+
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
 /*
 
 #if defined( CONFIG_FB)
@@ -2077,7 +2083,11 @@ static void himax_ts_button_func(int tp_key_index,struct himax_ts_data *ts)
 {
 	uint16_t x_position = 0, y_position = 0;
 	ts->protocol_type = PROTOCOL_TYPE_A;
+#ifdef CONFIG_TOUCHSCREEN_SMARTWAKE
 if ( tp_key_index != 0x00 && !display_off)
+#else
+if ( tp_key_index != 0x00)
+#endif
 	{
 		I("virtual key index =%x\n",tp_key_index); //TODO: disable virtual hardware buttons (menu, home, back)
 		if ( tp_key_index == 0x01) {
@@ -2620,14 +2630,19 @@ bypass_checksum_failed_packet:
 								ts->last_slot = loop_i;
 								input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, 1);
 							}
-							input_report_key(ts->input_dev, BTN_TOUCH, finger_on);
-							input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 1);
-							//input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, w);
-							//input_report_abs(ts->input_dev, ABS_MT_PRESSURE, w);
-							input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
-							input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
+#ifdef CONFIG_POCKETMOD
+							if (!display_off || (device_is_pocketed() == 0))
+#endif
+							{
+							    input_report_key(ts->input_dev, BTN_TOUCH, finger_on);
 
-
+							    input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, 1);
+							    //input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, w);
+							    //input_report_abs(ts->input_dev, ABS_MT_PRESSURE, w);
+							    input_report_abs(ts->input_dev, ABS_MT_POSITION_X, x);
+							    input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, y);
+							}
+							
 							if (ts->protocol_type == PROTOCOL_TYPE_A)
 							{
 								
