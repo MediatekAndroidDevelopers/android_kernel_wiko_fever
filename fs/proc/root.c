@@ -22,6 +22,9 @@
 #include <linux/parser.h>
 
 #include "internal.h"
+#ifndef LYCONFIG_DETECT_HW_INFO_SUPPORT
+#define LYCONFIG_DETECT_HW_INFO_SUPPORT
+#endif
 
 static int proc_test_super(struct super_block *sb, void *data)
 {
@@ -178,6 +181,9 @@ void __init proc_root_init(void)
 	proc_mkdir("sysvipc", NULL);
 #endif
 	proc_mkdir("fs", NULL);
+#ifdef LYCONFIG_DETECT_HW_INFO_SUPPORT
+       proc_mkdir("hw_info", NULL); 
+#endif
 	proc_mkdir("driver", NULL);
 	proc_mkdir("fs/nfsd", NULL); /* somewhere for the nfsd filesystem to be mounted */
 #if defined(CONFIG_SUN_OPENPROMFS) || defined(CONFIG_SUN_OPENPROMFS_MODULE)
