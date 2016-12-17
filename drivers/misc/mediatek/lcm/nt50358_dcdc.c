@@ -119,7 +119,7 @@ int nt50358_dcdc_write_byte(char cmd, char writeData)
 
 int nt50358_dcdc_set_avdd (char addr, char value)
 {
-	char tmp;
+	char tmp = 0;
 
 	nt50358_dcdc_read_byte(addr, &tmp);
 	nt50358_dcdc_xlog_printk("[nt50358_dcdc_read_byte] Reg[%x]=0x%x\n",addr, tmp);
@@ -134,7 +134,7 @@ int nt50358_dcdc_set_avdd (char addr, char value)
 
 int nt50358_dcdc_set_avee (char addr, char value)
 {
-	char tmp;
+	char tmp = 0;
 
 	nt50358_dcdc_read_byte(addr, &tmp);
 	nt50358_dcdc_xlog_printk("[nt50358_dcdc_read_byte] Reg[%x]=0x%x\n",addr, tmp);

@@ -24,7 +24,7 @@
 //#include <plat/gpio-cfg.h>
 //#include <linux/module.h>
 #include <linux/spi/spi.h>
-#include <../../../../../../kernel-3.18/drivers/spi/mediatek/mt6735/mt_spi.h>
+#include <../../../../../drivers/spi/mediatek/mt6735/mt_spi.h>
 
 //#include <mach/mt_gpio.h>
 //#include <mach/mt_pm_ldo.h>
