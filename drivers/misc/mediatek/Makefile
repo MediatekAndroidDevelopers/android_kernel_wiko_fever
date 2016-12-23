@@ -7,6 +7,7 @@ export LYCONFIG_COMB_SPEAKER_SUPPORT = CLASS_D
 export LYCONFIG_DETECT_HW_INFO_SUPPORT = yes
 export LYCONFIG_COMB_FINGERPRINT_SUPPORT = ET310
 export LYCONFIG_MTK_FLIP_HALL_SUPPORT = yes
+export CUSTOM_HAL_LENS = fm50af_f1c_gq sensordrive dw9714af_f5b_gq dummy_lens
 
 #$(call all-subdir-src-or-makefile)
 MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
