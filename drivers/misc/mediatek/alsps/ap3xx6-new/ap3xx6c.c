@@ -219,6 +219,13 @@ static struct i2c_driver ap3xx6_i2c_driver = {
 	},
 };
 
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#include <linux/input/smartwake.h>
+#define POCKETMOD_DEBUG         0
+bool ap3xx6_ps_enabled = false;
+#endif
+
 static int ap3xx6_local_init(void);
 static int ap3xx6_remove(void);
 
@@ -2007,7 +2014,11 @@ static int ap3xx6_ps_enable_nodata(int en)
 		return -1;
 	}
 	value = en;
+#ifdef CONFIG_POCKETMOD
+	if (value && !ap3xx6_ps_enabled) {
+#else
 	if (value) {
+#endif
 /*
 		err = ap3xx6_enable_ps(obj->client, 1);
 		if (err != 0) {
@@ -2044,7 +2055,15 @@ static int ap3xx6_ps_enable_nodata(int en)
 		if ((err == 0) && (ps_value > 0)) {
 			ps_report_interrupt_data(ps_value);
 		}
-	} else{
+#ifdef CONFIG_POCKETMOD
+#if POCKETMOD_DEBUG
+		APS_DBG("pocket_detection_check: activated sensor\n");
+#endif
+		ap3xx6_ps_enabled = true;
+	} else if (ap3xx6_ps_enabled && !smartwake_switch) {
+#else
+	} else {
+#endif
 		err = ap3xx6_enable_ps(obj->client, 0);
 		if (err != 0) {
 			APS_ERR("disable ps fail: %d\n", err);
@@ -2060,7 +2079,12 @@ static int ap3xx6_ps_enable_nodata(int en)
 			return -1;
 		}
 #endif
-
+#ifdef CONFIG_POCKETMOD
+#if POCKETMOD_DEBUG
+		APS_DBG("pocket_detection_check: de-activated sensor\n");
+#endif
+		ap3xx6_ps_enabled = false;
+#endif
 	}
 
 	return 0;
@@ -2070,6 +2094,30 @@ static int ap3xx6_ps_set_delay(u64 ns)
 {
 	return 0;
 }
+
+#ifdef CONFIG_POCKETMOD
+int ap3xx6_pocket_detection_check(void) {
+	struct ap3xx6_priv *obj = ap3xx6_obj;
+	int err = 0;
+	int prox_value = -1;
+	if (!ap3xx6_ps_enabled) {
+		ap3xx6_ps_enable_nodata(1);
+	}
+
+	if (obj == NULL) {
+		APS_ERR("pocket_detection_check: ap3xx6_obj is null\n");
+		return 0;
+	}
+
+	err = ap3xx6_read_ps(obj->client, &obj->ps);
+	if (err != 0) {
+		APS_ERR("pocket_detection_check: ap3xx6_read_ps failed err=%d\n", err);
+		return 0;
+	}
+	prox_value = ap3xx6_get_ps_value(obj, obj->ps);
+	return prox_value == 0 ? 0 : 1; //ignore invalid state for now
+}
+#endif
 
 static int ap3xx6_ps_get_data(int *value, int *status)
 {
@@ -2258,6 +2306,11 @@ APS_LOG("als_register_data_path OK.%s:\n", __func__);
 
 	ap3xx6_init_flag = 0;
 	APS_LOG("%s: OK\n", __func__);
+
+#ifdef CONFIG_POCKETMOD
+	alsps_dev = "ap3xx6";
+#endif
+
 	return 0;
 
 exit_create_attr_failed:

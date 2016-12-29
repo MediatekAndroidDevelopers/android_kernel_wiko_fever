@@ -22,6 +22,10 @@
 #include "em30718.h"
 #include "alsps.h"
 
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+#endif
+
 /******************************************************************************
  * configuration
 *******************************************************************************/
@@ -1573,10 +1577,10 @@ int em3071_pocket_detection_check(void) {
 	struct em3071_priv *obj = em3071_obj;
 	int err = 0;
 	int prox_value = -1;
-        if (!ps_enabled) {
-                ps_enable_nodata(1);
-        }
-        
+	if (!ps_enabled) {
+		ps_enable_nodata(1);
+	}
+
 	if (obj == NULL) {
 		APS_ERR("pocket_detection_check: em3071_obj is null\n");
 		return 0;
@@ -1791,6 +1795,11 @@ static int em3071_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 
 	APS_LOG("%s: OK\n", __func__);
 	em3071_init_flag = 0;
+
+#ifdef CONFIG_POCKETMOD
+	alsps_dev = "em3071";
+#endif
+
 	return 0;
 	
 exit_sensor_obj_attach_fail:

@@ -33,6 +33,7 @@
 #include <linux/pocket_mod.h>
 #include <linux/input/smartwake.h>
 
+char* alsps_dev;
 unsigned pocket_mod_switch = 1;
 
 int device_is_pocketed(void) {
@@ -41,7 +42,18 @@ int device_is_pocketed(void) {
 		return 0;
 
 	if (display_off) {
-                return !em3071_pocket_detection_check();
+		if (alsps_dev == "em3071") {
+			return !em3071_pocket_detection_check();
+		}
+		else if (alsps_dev == "stk3x1x") {
+			return !stk3x1x_pocket_detection_check();
+		}
+		else if (alsps_dev == "ap3xx6") {
+			return !ap3xx6_pocket_detection_check();
+		}
+		else if (alsps_dev == "epl259x") {
+			return !epl259x_pocket_detection_check();
+		}
 	}
 
 	return 0;

@@ -106,7 +106,10 @@ static struct alsps_init_info epl_sensor_init_info = {
 extern struct alsps_context *alsps_context_obj;
 #endif
 
-
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+static int epl259x_ps_enabled = 0;
+#endif
 
 #ifdef CONFIG_OF
 static const struct of_device_id epl259x_of_match[] = {
@@ -1513,6 +1516,9 @@ void epl_sensor_enable_ps(int enable)
         epl_sensor_fast_update(epld->client);
         epl_sensor_update_mode(epld->client);
     }
+#ifdef CONFIG_POCKETMOD
+    epl259x_ps_enabled = enable;
+#endif
 
 }
 
@@ -3637,6 +3643,30 @@ static int ps_set_delay(u64 ns)
 	return 0;
 }
 /*--------------------------------------------------------------------------------*/
+#ifdef CONFIG_POCKETMOD
+int epl259x_pocket_detection_check(void) {
+	struct epl_sensor_priv *obj = epl_sensor_obj;
+	int err = 0;
+	int prox_value = -1;
+	if (!epl259x_ps_enabled) {
+		ps_enable_nodata(1);
+	}
+
+	if (obj == NULL) {
+		APS_ERR("pocket_detection_check: epl_sensor_obj is null\n");
+		return 0;
+	}
+
+	err = epl_sensor_read_ps(obj->client);
+	if (err != 0) {
+		APS_ERR("pocket_detection_check: epl_sensor_read_ps failed err=%d\n", err);
+		return 0;
+	}
+	prox_value = epl_sensor.ps.compare_low >> 3;
+	return prox_value == 0 ? 0 : 1; //ignore invalid state for now
+}
+#endif
+/*--------------------------------------------------------------------------------*/
 static int ps_get_data(int* value, int* status)
 {
 
@@ -4064,6 +4094,11 @@ static int epl_sensor_i2c_probe(struct i2c_client *client, const struct i2c_devi
 #endif
 
     APS_LOG("%s: OK\n", __FUNCTION__);
+
+#ifdef CONFIG_POCKETMOD
+	alsps_dev = "epl259x";
+#endif
+
     return 0;
 
 exit_create_attr_failed:

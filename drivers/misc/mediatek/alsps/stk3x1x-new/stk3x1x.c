@@ -79,6 +79,10 @@ static int	stk3x1x_init_flag = -1;	// 0<==>OK -1 <==> fail
 static int  stk3x1x_local_init(void);
 static int  stk3x1x_local_uninit(void);
 
+#ifdef CONFIG_POCKETMOD
+#include <linux/pocket_mod.h>
+static int stk3x1x_ps_enabled = 0;
+#endif
 
 static struct alsps_init_info stk3x1x_init_info = {
 		.name = STK3X1X_DEV_NAME,
@@ -1088,6 +1092,10 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable)
 	{
 		APS_LOG("enable ps  (%d)\n", enable);
 	}
+
+#ifdef CONFIG_POCKETMOD
+	stk3x1x_ps_enabled = enable;
+#endif
 
 	return err;
 }
@@ -2917,6 +2925,30 @@ static int ps_set_delay(u64 ns)
 	return 0;
 }
 
+#ifdef CONFIG_POCKETMOD
+int stk3x1x_pocket_detection_check(void) {
+	struct stk3x1x_priv *obj = stk3x1x_obj;
+	int err = 0;
+	int prox_value = -1;
+	if (!stk3x1x_ps_enabled) {
+		ps_enable_nodata(1);
+	}
+
+	if (obj == NULL) {
+		APS_ERR("pocket_detection_check: stk3x1x_obj is null\n");
+		return 0;
+	}
+
+	err = stk3x1x_read_ps(obj->client, &obj->ps);
+	if (err != 0) {
+		APS_ERR("pocket_detection_check: stk3x1x_read_ps failed err=%d\n", err);
+		return 0;
+	}
+	prox_value = stk3x1x_get_ps_value(obj, obj->ps);
+	return prox_value == 0 ? 0 : 1; //ignore invalid state for now
+}
+#endif
+
 static int ps_get_data(int* value, int* status)
 {
     int err = 0;
@@ -3133,9 +3165,13 @@ static int stk3x1x_i2c_probe(struct i2c_client *client, const struct i2c_device_
 		APS_ERR("register proximity batch support err = %d\n", err);
 	}
 
-
     stk3x1x_init_flag = 0;
 	APS_LOG("%s: OK\n", __FUNCTION__);
+
+#ifdef CONFIG_POCKETMOD
+	alsps_dev = "stk3x1x";
+#endif
+
 	return 0;
 	
 exit_sensor_obj_attach_fail:
