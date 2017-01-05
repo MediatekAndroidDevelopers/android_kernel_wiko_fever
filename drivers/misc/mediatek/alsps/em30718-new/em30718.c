@@ -602,7 +602,9 @@ static int em3071_enable_ps(struct i2c_client *client, int enable)
 			disable_irq(em3071_obj->irq);
 		}
 	}
+	#ifdef CONFIG_POCKETMOD
 	ps_enabled=enable;
+	#endif
 	return 0;
 	
 EXIT_ERR:
@@ -1332,10 +1334,12 @@ static int em3071_i2c_suspend(struct i2c_client *client, pm_message_t msg)
 //	struct em3071_priv *obj = i2c_get_clientdata(client);    
 //	int err;
 	APS_FUN(); 
+	#ifndef CONFIG_POCKETMOD
 	if(ps_enabled)
 	{
 		return -EACCES;
 	}
+	#endif
 	
 	return 0;
 }
