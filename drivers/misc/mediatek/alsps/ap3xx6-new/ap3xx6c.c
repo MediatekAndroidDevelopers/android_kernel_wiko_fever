@@ -2060,7 +2060,7 @@ static int ap3xx6_ps_enable_nodata(int en)
 		APS_DBG("pocket_detection_check: activated sensor\n");
 #endif
 		ap3xx6_ps_enabled = true;
-	} else if (ap3xx6_ps_enabled && !smartwake_switch) {
+	} else if (ap3xx6_ps_enabled) {
 #else
 	} else {
 #endif
