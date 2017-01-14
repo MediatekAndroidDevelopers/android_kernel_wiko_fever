@@ -1117,7 +1117,7 @@ CONFIG_MTK_POWER_GS=y
 CONFIG_MTK_SHARED_SDCARD=y
 CONFIG_MTK_GPT_SCHEME_SUPPORT=y
 CONFIG_MTK_SENSOR_SUPPORT=y
-CONFIG_CUSTOM_KERNEL_IMGSENSOR="ov5648_mipi_raw_f5b_gq mn34152_mipi_raw_f5b_gq imx149_mipi_raw_gq ov9762_mipi_raw_gq ov9760_mipi_raw_gq s5k3l2_mipi_raw s5k5e2ya_mipi_raw_f5b_gq"
+CONFIG_CUSTOM_KERNEL_IMGSENSOR="ov5648_mipi_raw_f5b_gq mn34152_mipi_raw_f5b_gq imx149_mipi_raw_gq ov9762_mipi_raw_gq ov9760_mipi_raw_gq s5k3h5xa_mipi_raw s5k3l2_mipi_raw s5k5e2ya_mipi_raw_f5b_gq"
 # CONFIG_MT_ENG_BUILD is not set
 # CONFIG_MTK_LDVT is not set
 # CONFIG_MTK_LCM_PHYSICAL_ROTATION_HW is not set
