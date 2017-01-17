@@ -1013,7 +1013,7 @@ ALGO_END_WITH_ACTION:
 ALGO_END_WO_ACTION:
 	hps_count++;
 	if ((hps_count%0xf) == 0) {
-		hps_warn(
+		/*hps_warn(
 		"(%04lx)(%u)DBG_HRT(%u)(%u)(%u)(%u) (%u)(%u)(%u)(%u)(%u) (%u)(%u)(%u) (%u)(%u)(%u) (%u)(%u)(%u)(%u)(%u) wifi_base(%u)\n",
 		hps_ctxt.action, little_num_online,
 		hps_ctxt.cur_loads, hps_ctxt.cur_tlp, hps_ctxt.cur_iowait,
@@ -1029,7 +1029,7 @@ ALGO_END_WO_ACTION:
 		hps_ctxt.down_loads_history_index,
 		hps_ctxt.rush_count, hps_ctxt.tlp_sum, hps_ctxt.tlp_count,
 		hps_ctxt.tlp_history_index, hps_ctxt.tlp_avg,
-		hps_ctxt.little_num_base_wifi);
+		hps_ctxt.little_num_base_wifi);*/
 		hps_count = 0;
 	}
 	mutex_unlock(&hps_ctxt.lock);

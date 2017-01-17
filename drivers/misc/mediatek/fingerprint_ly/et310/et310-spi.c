@@ -74,7 +74,7 @@
 #endif
 
 
-#define FP_SPI_DEBUG
+//#define FP_SPI_DEBUG
 #ifdef FP_SPI_DEBUG
 //#define DEBUG_PRINT(fmt, args...)	pr_err(fmt, ## args)
 #define DEBUG_PRINT(fmt, args...)	printk(fmt, ## args)
