@@ -198,9 +198,6 @@ obj-$(CONFIG_MTK_TINYSYS_SCP_SUPPORT) += scp/
 ifneq ($(wildcard $(srctree)/drivers/misc/mediatek/cpu_stress/),)
 obj-$(CONFIG_MTK_CPU_STRESS)	+= cpu_stress/
 endif
-#ifeq ($(LYCONFIG_MTK_FLIP_HALL_SUPPORT),yes)
-obj-$(CONFIG_LY_GPIO_SWITCH_SUPPORT)   += switch/
-#endif
 ifeq ($(LYCONFIG_MTK_GPIO_CAM_SUPPORT),true)
 obj-$(CONFIG_LY_GPIO_CAMKEY_SUPPORT)   += camkey/
 endif

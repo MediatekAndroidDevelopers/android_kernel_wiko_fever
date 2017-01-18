@@ -1,6 +1,0 @@
-config LY_GPIO_SWITCH_SUPPORT
-	tristate "GPIO Swith support"
-	depends on GPIOLIB
-	help
-	  Say Y here to enable GPIO based switch support.
-
