@@ -674,8 +674,8 @@ LCM_DRIVER *lcm_driver_list[] = {
 	&r69429_wuxga_dsi_vdo_lcm_drv,
 #endif
 
-#if defined(HX8394D_HD720_DSI_VDO_TIANMA)
-	&hx8394d_hd720_dsi_vdo_tianma_lcm_drv,
+#if defined(HX8394D_DSI_VDO_LIDE)
+	&hx8394d_dsi_vdo_lide_lcm_drv,
 #endif
 
 #if defined(HX8394A_HD720_DSI_VDO_TIANMA)
