@@ -491,17 +491,14 @@ static void lcm_get_params(LCM_PARAMS *params)
 }
 
 static void lcm_init(void)
-{
-		SET_RESET_PIN(0);
-		MDELAY(20); 
-		SET_RESET_PIN(1);
-		MDELAY(20); 
+{		
+		MDELAY(50);    
 		push_table(lcm_init_setting,sizeof(lcm_init_setting)/sizeof(lcm_init_setting[0]),1);
         //init_lcm_registers();
 }
 
 
-static void lcm_suspend(void)
+/*static void lcm_suspend(void)
 {
 	unsigned int data_array[16];
 
@@ -511,14 +508,7 @@ static void lcm_suspend(void)
 	data_array[0] = 0x00100500; // Sleep In
 	dsi_set_cmdq(data_array, 1, 1);
 
-	SET_RESET_PIN(1);	
-	SET_RESET_PIN(0);
-	MDELAY(1); // 1ms
-	
-	SET_RESET_PIN(1);
 	MDELAY(120);     
-	//lcm_util.set_gpio_out(GPIO_LCD_ENN, GPIO_OUT_ZERO);
-	//lcm_util.set_gpio_out(GPIO_LCD_ENP, GPIO_OUT_ZERO);
 }
 
 
@@ -533,7 +523,7 @@ static void lcm_resume(void)
     #else
 	  printk("[KERNEL]---cmd---hx8394d_hd720_dsi_vdo----%s------\n",__func__);
     #endif	
-}
+}*/
          
 static unsigned int lcm_compare_id(void)
 {
@@ -605,8 +595,8 @@ LCM_DRIVER hx8394d_dsi_vdo_lide_lcm_drv =
 	.set_util_funcs = lcm_set_util_funcs,
 	.get_params     = lcm_get_params,
 	.init           = lcm_init,
-	.suspend        = lcm_suspend,
-	.resume         = lcm_resume,
+	//.suspend        = lcm_suspend,
+	//.resume         = lcm_resume,
 	.compare_id     = lcm_compare_id,
 	//.esd_check 	= lcm_esd_check,
 	//.esd_recover	= lcm_esd_recover,
