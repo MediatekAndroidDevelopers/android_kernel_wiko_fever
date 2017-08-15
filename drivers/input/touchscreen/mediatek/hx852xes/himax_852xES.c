@@ -742,19 +742,19 @@ static int himax_input_register(struct himax_ts_data *ts)
 	set_bit(KEY_MENU, ts->input_dev->keybit);
 	set_bit(KEY_SEARCH, ts->input_dev->keybit);
 #if defined(HX_SMART_WAKEUP)||defined(HX_PALM_REPORT)
-	input_set_capability(ts->input_dev,EV_KEY,KEY_DUBCLICK);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_01);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_02);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_03);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_04);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_05);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_U);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_UP);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_DOWN);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_LEFT);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_RIGHT);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_C);
 	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_06);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_07);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_08);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_M);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_O);
 	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_09);
 	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_10);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_11);
-	input_set_capability(ts->input_dev,EV_KEY,KEY_CUST_12);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_W);
+	input_set_capability(ts->input_dev,EV_KEY,KEY_E);
 	//set_bit(KEY_DUBCLICK, ts->input_dev->keybit);
 	//set_bit(KEY_CUST_01, ts->input_dev->keybit);
 	//set_bit(KEY_CUST_02, ts->input_dev->keybit);
@@ -2883,31 +2883,31 @@ static int touch_event_handler(void *ptr)
 			ret_event = himax_parse_wake_event(private_ts);
 			switch (ret_event) {
 				case EV_GESTURE_PWR:
-					KEY_EVENT = KEY_DUBCLICK;
+					KEY_EVENT = KEY_U;
 				break;
 				case EV_GESTURE_01://UP
-					KEY_EVENT = KEY_CUST_01;
+					KEY_EVENT = KEY_UP;
 				break;
 				case EV_GESTURE_02://Down
-					KEY_EVENT = KEY_CUST_02;
+					KEY_EVENT = KEY_DOWN;
 				break;
 				case EV_GESTURE_03://Left
-					KEY_EVENT = KEY_CUST_03;
+					KEY_EVENT = KEY_LEFT;
 				break;
 				case EV_GESTURE_04://Right
-					KEY_EVENT = KEY_CUST_04;
+					KEY_EVENT = KEY_RIGHT;
 				break;
 				case EV_GESTURE_05://C
-					KEY_EVENT = KEY_CUST_05;
+					KEY_EVENT = KEY_C;
 				break;
 				case EV_GESTURE_06://Z
 					KEY_EVENT = KEY_CUST_06;
 				break;
 				case EV_GESTURE_07://m
-					KEY_EVENT = KEY_CUST_07;
+					KEY_EVENT = KEY_M;
 				break;
 				case EV_GESTURE_08://O
-					KEY_EVENT = KEY_CUST_08;
+					KEY_EVENT = KEY_O;
 				break;
 				case EV_GESTURE_09://S
 					KEY_EVENT = KEY_CUST_09;
@@ -2916,10 +2916,10 @@ static int touch_event_handler(void *ptr)
 					KEY_EVENT = KEY_CUST_10;
 				break;
 				case EV_GESTURE_11://W
-					KEY_EVENT = KEY_CUST_11;
+					KEY_EVENT = KEY_W;
 				break;
 				case EV_GESTURE_12://e
-					KEY_EVENT = KEY_CUST_12;
+					KEY_EVENT = KEY_E;
 				break;
 				case EV_GESTURE_13://reserved
 					KEY_EVENT = KEY_CUST_13;

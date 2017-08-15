@@ -38,6 +38,9 @@
 	|| defined(CONFIG_TOUCHSCREEN_SYNAPTICS_S3528) || defined(CONFIG_MTK_S7020)
 #include <linux/input/mt.h>
 #endif /* CONFIG_MTK_S3320 */
+
+#define LYCONFIG_FEA_TP_WAKEUP_SUPPORT
+
 /* for magnify velocity******************************************** */
 #define TOUCH_IOC_MAGIC 'A'
 
@@ -315,7 +318,7 @@ static struct miscdevice tpd_misc_device = {
 /* ********************************************** */
 /* #endif */
 #if defined(LYCONFIG_FEA_TP_WAKEUP_SUPPORT)
-int tpd_gesture_enable_status=1;
+int tpd_gesture_enable_status=0;
 static struct kobject *tpd_gesture_kobj = NULL;
 static ssize_t tpd_gesture_enable_show(struct kobject *kobj,struct kobj_attribute *attr, char *buf)
 {
