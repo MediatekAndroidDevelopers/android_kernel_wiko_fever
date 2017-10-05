@@ -98,3 +98,6 @@ x509.genkey
 all.config
 
 !FT_Upgrade_App.i
+
+# Out directory
+/out
