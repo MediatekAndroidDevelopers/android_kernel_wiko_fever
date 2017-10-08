@@ -74,196 +74,6 @@ u32 gt1x_abs_x_max = 0;
 u32 gt1x_abs_y_max = 0;
 int gt1x_halt = 0;
 
-static ssize_t gt1x_debug_read_proc(struct file *, char __user *, size_t, loff_t *);
-static ssize_t gt1x_debug_write_proc(struct file *, const char __user *, size_t, loff_t *);
-
-static struct proc_dir_entry *gt1x_debug_proc_entry = NULL;
-static const struct file_operations gt1x_debug_fops = {
-	.owner = THIS_MODULE,
-	.read = gt1x_debug_read_proc,
-	.write = gt1x_debug_write_proc,
-};
-
-static s32 gt1x_init_debug_node(void)
-{
-	gt1x_debug_proc_entry = proc_create(GT1X_DEBUG_PROC_FILE, 0660, NULL, &gt1x_debug_fops);
-	if (gt1x_debug_proc_entry == NULL) {
-		GTP_ERROR("Create proc entry /proc/%s FAILED!", GT1X_DEBUG_PROC_FILE);
-		return -1;
-	}
-	GTP_INFO("Created proc entry /proc/%s.", GT1X_DEBUG_PROC_FILE);
-	return 0;
-}
-
-static void gt1x_deinit_debug_node(void)
-{
-	if (gt1x_debug_proc_entry != NULL) {
-		remove_proc_entry(GT1X_DEBUG_PROC_FILE, NULL);
-	}
-}
-
-static ssize_t gt1x_debug_read_proc(struct file *file, char __user * page, size_t size, loff_t * ppos)
-{
-	char *ptr = page;
-	char temp_data[GTP_CONFIG_MAX_LENGTH] = { 0 };
-	int i;
-
-	if (*ppos) {
-		return 0;
-	}
-
-	ptr += sprintf(ptr, "==== GT1X default config setting in driver====\n");
-
-	for (i = 0; i < GTP_CONFIG_MAX_LENGTH; i++) {
-		ptr += sprintf(ptr, "0x%02X,", gt1x_config[i]);
-		if (i % 10 == 9)
-			ptr += sprintf(ptr, "\n");
-	}
-
-	ptr += sprintf(ptr, "\n");
-
-	ptr += sprintf(ptr, "==== GT1X config read from chip====\n");
-	i = gt1x_i2c_read(GTP_REG_CONFIG_DATA, temp_data, GTP_CONFIG_MAX_LENGTH);
-	GTP_INFO("I2C TRANSFER: %d", i);
-	for (i = 0; i < GTP_CONFIG_MAX_LENGTH; i++) {
-		ptr += sprintf(ptr, "0x%02X,", temp_data[i]);
-
-		if (i % 10 == 9)
-			ptr += sprintf(ptr, "\n");
-	}
-
-	ptr += sprintf(ptr, "\n");
-	/* Touch PID & VID */
-	ptr += sprintf(ptr, "==== GT1X Version Info ====\n");
-
-	gt1x_i2c_read(GTP_REG_VERSION, temp_data, 12);
-	ptr += sprintf(ptr, "ProductID: GT%c%c%c%c\n", temp_data[0], temp_data[1], temp_data[2], temp_data[3]);
-	ptr += sprintf(ptr, "PatchID: %02X%02X\n", temp_data[4], temp_data[5]);
-	ptr += sprintf(ptr, "MaskID: %02X%02X\n", temp_data[7], temp_data[8]);
-	ptr += sprintf(ptr, "SensorID: %02X\n", temp_data[10] & 0x0F);
-
-	*ppos += ptr - page;
-	return (ptr - page);
-}
-
-static ssize_t gt1x_debug_write_proc(struct file *file, const char *buffer, size_t count, loff_t * ppos)
-{
-	s32 ret = 0;
-	u8 buf[GTP_CONFIG_MAX_LENGTH] = { 0 };
-	char mode_str[50] = { 0 };
-	int mode;
-	int cfg_len;
-	char arg1[50] = { 0 };
-	u8 temp_config[GTP_CONFIG_MAX_LENGTH] = { 0 };
-
-	GTP_DEBUG("write count %ld\n", (unsigned long)count);
-
-	if (count > GTP_CONFIG_MAX_LENGTH) {
-		GTP_ERROR("Too much data, buffer size: %d, data:%ld", GTP_CONFIG_MAX_LENGTH, (unsigned long)count);
-		return -EFAULT;
-	}
-
-	if (copy_from_user(buf, buffer, count)) {
-		GTP_ERROR("copy from user fail!");
-		return -EFAULT;
-	}
-	// send config
-	if (count == gt1x_cfg_length) {
-		memcpy(gt1x_config, buf, count);
-		ret = gt1x_send_cfg(gt1x_config, gt1x_cfg_length);
-		if (ret < 0) {
-			GTP_ERROR("send gt1x_config failed.");
-			return -EFAULT;
-		}
-		gt1x_abs_x_max = (gt1x_config[RESOLUTION_LOC + 1] << 8) + gt1x_config[RESOLUTION_LOC];
-		gt1x_abs_y_max = (gt1x_config[RESOLUTION_LOC + 3] << 8) + gt1x_config[RESOLUTION_LOC + 2];
-
-		return count;
-	}
-
-	sscanf(buf, "%s %d", (char *)&mode_str, &mode);
-
-	//force clear gt1x_config
-	if (strcmp(mode_str, "clear_config") == 0) {
-		GTP_INFO("Force clear gt1x_config");
-		gt1x_send_cmd(GTP_CMD_CLEAR_CFG, 0);
-		return count;
-	}
-	if (strcmp(mode_str, "init") == 0) {
-		GTP_INFO("Init panel");
-		gt1x_init_panel();
-		return count;
-	}
-	if (strcmp(mode_str, "chip") == 0) {
-		GTP_INFO("Get chip type:");
-		gt1x_get_chip_type();
-		return count;
-	}
-	if (strcmp(mode_str, "int") == 0) {
-		if (mode == 0) {
-			GTP_INFO("Disable irq.");
-			gt1x_irq_disable();
-		} else {
-			GTP_INFO("Enable irq.");
-			gt1x_irq_enable();
-		}
-		return count;
-	}
-
-	if (strcmp(mode_str, "poweron") == 0) {
-		gt1x_power_switch(1);
-		return count;
-	}
-
-	if (strcmp(mode_str, "poweroff") == 0) {
-		gt1x_power_switch(0);
-		return count;
-	}
-
-	if (strcmp(mode_str, "version") == 0) {
-		gt1x_read_version(NULL);
-		return count;
-	}
-
-	if (strcmp(mode_str, "reset") == 0) {
-        gt1x_irq_disable();
-		gt1x_reset_guitar();
-        gt1x_irq_enable();
-		return count;
-	}
-#if GTP_CHARGER_SWITCH
-	if (strcmp(mode_str, "charger") == 0) {
-		gt1x_charger_config(mode);
-		return count;
-	}
-#endif
-	sscanf(buf, "%s %s", (char *)&mode_str, (char *)&arg1);
-	if (strcmp(mode_str, "update") == 0) {
-		gt1x_update_firmware(arg1);
-		return count;
-	}
-
-	if (strcmp(mode_str, "sendconfig") == 0) {
-		cfg_len = gt1x_parse_config(arg1, temp_config);
-		if (cfg_len < 0) {
-			return -1;
-		}
-		gt1x_send_cfg(temp_config, gt1x_cfg_length);
-		return count;
-	}
-
-    if (strcmp(mode_str, "debug_gesture") == 0) {
-#if GTP_GESTURE_WAKEUP
-        gt1x_gesture_debug(!!mode);
-#endif
-    }
-
-    if (strcmp(mode_str, "force_update") == 0) {
-        update_info.force_update = !!mode;
-    }
-	return gt1x_debug_proc(buf, count);
-}
-
 static u8 ascii2hex(u8 a)
 {
 	s8 value = 0;
@@ -2395,9 +2205,6 @@ s32 gt1x_init(void)
 		GTP_ERROR("Create workqueue failed!");
 	}
 
-/* init auxiliary  node and functions */
-	gt1x_init_debug_node();
-
 #if GTP_CREATE_WR_NODE
 	gt1x_init_tool_node();
 #endif
@@ -2429,8 +2236,6 @@ s32 gt1x_init(void)
 
 void gt1x_deinit(void)
 {
-	gt1x_deinit_debug_node();
-
 #if GTP_GESTURE_WAKEUP || GTP_HOTKNOT
 	gt1x_deinit_node();
 #endif
@@ -2465,4 +2270,3 @@ void gt1x_deinit(void)
 	}
 
 }
-

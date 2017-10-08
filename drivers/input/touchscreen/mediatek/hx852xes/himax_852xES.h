@@ -65,7 +65,7 @@
 
 #define HIMAX_DRIVER_VER "0.1.6.0"
 
-#define CONFIG_TOUCHSCREEN_HIMAX_DEBUG
+//#define CONFIG_TOUCHSCREEN_HIMAX_DEBUG
 
 #define HIMAX852xes_NAME "Himax852xes"
 #define HIMAX852xes_FINGER_SUPPORT_NUM 10
@@ -91,7 +91,7 @@
 #define HX_TP_PROC_FLASH_DUMP
 #define HX_TP_PROC_SELF_TEST
 #define HX_TP_PROC_HITOUCH
-#define HX_TP_PROC_2T2R //if enable, Need to check "HX_2T2R_Addr"
+//#define HX_TP_PROC_2T2R //if enable, Need to check "HX_2T2R_Addr"
 						//and "HX_2T2R_en_setting" with project FW eng.
 
 #else
@@ -545,14 +545,6 @@ static struct proc_dir_entry *himax_proc_reset_file 		= NULL;
 #define GEST_PTLG_HDR_ID1   (0xCC)
 #define GEST_PTLG_HDR_ID2   (0x44)
 #define GEST_PT_MAX_NUM     (128)
-
-//static int gest_pt_cnt;
-//static int gest_pt_x[GEST_PT_MAX_NUM];
-//static int gest_pt_y[GEST_PT_MAX_NUM];
-static int gest_start_x=0,gest_start_y=0,gest_end_x=0,gest_end_y=0;
-static int gest_left_top_x=0,gest_left_top_y=0,gest_right_down_x=0,gest_right_down_y=0;
-static int gest_key_pt_x[3];
-static int gest_key_pt_y[3];
 
 	enum gesture_event_type {
 		EV_GESTURE_01 = 0x01,

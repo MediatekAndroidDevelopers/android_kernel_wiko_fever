@@ -3,8 +3,8 @@
 /*********************************/
 #define TPD_HAVE_BUTTON		//virtual key
 #define GSL_ALG_ID		//id suanfa
-#define GSL_DEBUG			//debug
-#define TPD_PROC_DEBUG		//adb debug
+//#define GSL_DEBUG			//debug
+//#define TPD_PROC_DEBUG		//adb debug
 //#define GSL_TIMER				//dingshiqi
 #if defined(LYCONFIG_TP_PROXIMITY_SUPPORT)
 #define TPD_PROXIMITY			//proximity

@@ -236,8 +236,8 @@ struct fts_ts_data {
 #define FTS_GESTRUE_EN 							0
 #endif
 #define MTK_EN 									1
-#define FTS_APK_DEBUG
-#define SYSFS_DEBUG
+//#define FTS_APK_DEBUG
+//#define SYSFS_DEBUG
 //#define TPD_AUTO_UPGRADE
 #if defined(LYCONFIG_TP_PROXIMITY_SUPPORT)
 #define FT_PROXIMITY_ENABLE						1

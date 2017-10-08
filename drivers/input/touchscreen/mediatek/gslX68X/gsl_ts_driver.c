@@ -12,6 +12,7 @@ Description   : Driver for Silead I2C touchscreen.
  ******************************************************************************/
 
 #include "tpd.h"
+#include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
 #include <linux/sched.h>
@@ -171,7 +172,6 @@ static char int_2nd[4];
 #ifdef TPD_PROC_DEBUG
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
-#include <linux/dma-mapping.h>
 static struct proc_dir_entry *gsl_config_proc = NULL;
 #define GSL_CONFIG_PROC_FILE "gsl_config"
 #define CONFIG_LEN 31
@@ -179,8 +179,9 @@ static char gsl_read[CONFIG_LEN];
 static u8 gsl_data_proc[8] = {0};
 static u8 gsl_proc_flag = 0;
 //static int version_flag = 0;
-static struct gsl_ts_data *proc_ddata = NULL;
 #endif
+
+static struct gsl_ts_data *proc_ddata = NULL;
 
 static DECLARE_WAIT_QUEUE_HEAD(waiter);
 static struct task_struct *thread = NULL;
@@ -1887,4 +1888,3 @@ static void __exit gsl_driver_exit(void)
 
 module_init(gsl_driver_init);
 module_exit(gsl_driver_exit);
-

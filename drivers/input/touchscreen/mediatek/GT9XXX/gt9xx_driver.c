@@ -237,16 +237,6 @@ static void gtp_recovery_reset(struct i2c_client *client);
 s32 i2c_read_bytes(struct i2c_client *client, u16 addr, u8 *rxbuf, int len);
 s32 i2c_write_bytes(struct i2c_client *client, u16 addr, u8 *txbuf, int len);
 
-static ssize_t gt91xx_config_read_proc(struct file *, char __user *, size_t, loff_t *);
-static ssize_t gt91xx_config_write_proc(struct file *, const char __user *, size_t, loff_t *);
-
-static struct proc_dir_entry *gt91xx_config_proc = NULL;
-static const struct file_operations config_proc_ops = {
-    .owner = THIS_MODULE,
-    .read = gt91xx_config_read_proc,
-    .write = gt91xx_config_write_proc,
-};
-
 #define VELOCITY_CUSTOM
 #ifdef VELOCITY_CUSTOM
 #include <linux/device.h>
@@ -466,75 +456,6 @@ s32 tpd_ps_operate(void *self, u32 command, void *buff_in, s32 size_in,
     return err;
 }
 #endif
-
-
-static ssize_t gt91xx_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos)
-{
-    char *ptr = page;
-    char temp_data[GTP_CONFIG_MAX_LENGTH + 2] = {0};
-    int i;
-    
-    if (*ppos)  // CMD call again
-    {
-        return 0;
-    }
-    
-    ptr += sprintf(ptr, "==== GT9XX config init value====\n");
-
-    for (i = 0 ; i < GTP_CONFIG_MAX_LENGTH ; i++)
-    {
-        ptr += sprintf(ptr, "0x%02X ", config[i + 2]);
-
-        if (i % 8 == 7)
-            ptr += sprintf(ptr, "\n");
-    }
-
-    ptr += sprintf(ptr, "\n");
-
-    ptr += sprintf(ptr, "==== GT9XX config real value====\n");
-    i2c_read_bytes(i2c_client_point, GTP_REG_CONFIG_DATA, temp_data, GTP_CONFIG_MAX_LENGTH);
-
-    for (i = 0 ; i < GTP_CONFIG_MAX_LENGTH ; i++)
-    {
-        ptr += sprintf(ptr, "0x%02X ", temp_data[i]);
-
-        if (i % 8 == 7)
-            ptr += sprintf(ptr, "\n");
-    }
-    *ppos += ptr - page;
-    return (ptr - page);
-}
-
-static ssize_t gt91xx_config_write_proc(struct file *filp, const char __user *buffer, size_t count, loff_t *off)
-{
-    s32 ret = 0;
-
-//    GTP_DEBUG("write count %uld\n", count);
-
-    if (count > GTP_CONFIG_MAX_LENGTH)
-    {
-//        GTP_ERROR("size not match [%d:%uld]\n", GTP_CONFIG_MAX_LENGTH, count);
-        return -EFAULT;
-    }
-
-    if (copy_from_user(&config[2], buffer, count))
-    {
-        GTP_ERROR("copy from user fail\n");
-        return -EFAULT;
-    }
-
-    ret = gtp_send_cfg(i2c_client_point);
-    abs_x_max = (config[RESOLUTION_LOC + 1] << 8) + config[RESOLUTION_LOC];
-    abs_y_max = (config[RESOLUTION_LOC + 3] << 8) + config[RESOLUTION_LOC + 2];
-    int_type = (config[TRIGGER_LOC]) & 0x03;
-
-    if (ret < 0)
-    {
-        GTP_ERROR("send config failed.");
-    }
-
-    return count;
-}
 
 #if GTP_SUPPORT_I2C_DMA
 s32 i2c_dma_read(struct i2c_client *client, u16 addr, u8 *rxbuf, s32 len)
@@ -1975,17 +1896,6 @@ static s32 tpd_i2c_probe(struct i2c_client *client, const struct i2c_device_id *
     {
         GTP_ERROR("GTP init panel failed.");
     }
-    
-    // Create proc file system
-    gt91xx_config_proc = proc_create(GT91XX_CONFIG_PROC_FILE, 0666, NULL, &config_proc_ops);
-    if (gt91xx_config_proc == NULL)
-    {
-        GTP_ERROR("create_proc_entry %s failed\n", GT91XX_CONFIG_PROC_FILE);
-    }
-    else
-    {
-        GTP_INFO("create proc entry %s success", GT91XX_CONFIG_PROC_FILE);
-    }
 
 #if GTP_CREATE_WR_NODE
     init_wr_node(client);
@@ -3273,4 +3183,3 @@ static void __exit tpd_driver_exit(void)
 
 module_init(tpd_driver_init);
 module_exit(tpd_driver_exit);
-

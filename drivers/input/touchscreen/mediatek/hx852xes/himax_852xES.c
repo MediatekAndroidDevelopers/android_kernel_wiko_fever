@@ -964,11 +964,13 @@ void himax_touch_information(void)
 			HX_MAX_PT				= 5;
 			HX_XY_REVERSE		= false;
 			HX_INT_IS_EDGE	= true;
-			
+
+#ifdef HX_TP_PROC_2T2R
 			HX_RX_NUM_2 		= 12;				 
 			HX_TX_NUM_2 		= 23;	
-			
+
 			Is_2T2R = true;
+#endif
 			#endif
 		}
 		else
@@ -981,11 +983,13 @@ void himax_touch_information(void)
 			HX_MAX_PT				= 5;
 			HX_XY_REVERSE		= false;
 			HX_INT_IS_EDGE	= true;
-			
+
+#ifdef HX_TP_PROC_2T2R
 			HX_RX_NUM_2 		= 12;				 
 			HX_TX_NUM_2 		= 23;	
-			
+
 			Is_2T2R = true;
+#endif
 		}
 }
 static uint8_t himax_read_Sensor_ID(struct i2c_client *client)
@@ -2249,13 +2253,12 @@ inline void himax_ts_work(void)
 	int base,x,y,w;
 	struct himax_ts_data *ts = private_ts;
 	uint8_t coordInfoSize;
-
+	int  	i;
 
 #ifdef HX_TP_PROC_DIAG
 	uint8_t *mutual_data;
 	uint8_t *self_data;
 	uint8_t diag_cmd;
-	int  	i;
 	int 	mul_num;
 	int 	self_num;
 	int 	index = 0;
