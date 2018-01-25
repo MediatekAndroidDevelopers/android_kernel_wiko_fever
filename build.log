@@ -1,0 +1,118 @@
+make[1]: Entering directory `/home/android/DISK900G/kernel-3.18/out'
+  CHK     include/config/kernel.release
+  Using .. as source for kernel
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CALL    ../scripts/checksyscalls.sh
+cat: /home/android/DISK900G/kernel-3.18/../../../../../../build.ini: No such file or directory
+../init/Makefile:35: -wlj--PWD= /home/android/DISK900G/kernel-3.18-------
+../init/Makefile:36: -wlj--WIKO_UNIFY_DEF= unify
+../init/Makefile:38: -wlj---ccflags-y += -DCONFIG_WIKO_UNIFY---
+  CC      init/main.o
+../init/main.c: In function 'tinno_platform_adapter':
+../init/main.c:557:2: warning: missing braces around initializer [-Wmissing-braces]
+  char temp_buf[TINNO_CMD_CONFIG_SIZE][32] = {0};
+  ^
+../init/main.c:557:2: warning: (near initialization for 'temp_buf[0]') [-Wmissing-braces]
+  CHK     include/generated/compile.h
+  CC      init/version.o
+  CC      init/do_mounts.o
+  CC      init/do_mounts_initrd.o
+  LD      init/mounts.o
+  CC      init/noinitramfs.o
+  CC      init/initramfs.o
+  CC      init/calibrate.o
+  CC      init/init_task.o
+  LD      init/built-in.o
+../drivers/misc/Makefile:68: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/misc/uid_stat.o
+cameraisp drv by platform 
+../drivers/misc/mediatek/ccci_util/Makefile:31: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_lib_fo.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_lib_load_img.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_lib_sys.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_private_log.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_lib_time.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_lib_main.o
+  LD      drivers/misc/mediatek/ccci_util/ccci_util_lib.o
+  CC      drivers/misc/mediatek/ccci_util/ccci_util_dummy.o
+  LD      drivers/misc/mediatek/ccci_util/built-in.o
+../drivers/misc/mediatek/connectivity/wlan/Makefile:13: include gen2
+../drivers/misc/mediatek/eccci/Makefile:39: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/misc/mediatek/eccci/ccci_core.o
+  CC      drivers/misc/mediatek/eccci/ccci_bm.o
+  CC      drivers/misc/mediatek/eccci/ccci_support.o
+  CC      drivers/misc/mediatek/eccci/port_char.o
+  CC      drivers/misc/mediatek/eccci/port_net.o
+  CC      drivers/misc/mediatek/eccci/port_kernel.o
+  CC      drivers/misc/mediatek/eccci/port_ipc.o
+  CC      drivers/misc/mediatek/eccci/port_cfg.o
+  CC      drivers/misc/mediatek/eccci/modem_cldma.o
+  LD      drivers/misc/mediatek/eccci/ccci.o
+  LD      drivers/misc/mediatek/eccci/built-in.o
+../drivers/misc/mediatek/fmradio/Makefile:49: MT6627_FM
+../drivers/misc/mediatek/fmradio/Makefile:74: core/fm_module.o core/fm_main.o core/fm_config.o core/fm_rds_parser.o core/fm_patch.o core/fm_utils.o core/fm_link.o core/fm_eint.o mt6627/pub/mt6627_fm_lib.o mt6627/pub/mt6627_fm_rds.o mt6627/pub/mt6627_fm_cmd.o mt6627/pub/mt6627_fm_config.o
+*MTK_GPU_VERSION 1 = mali
+$CONFIG_MTK_GPU_COMMON_DVFS_SUPPORT is [y]
+*MTK_GPU_VERSION 2 = midgard
+*MTK_GPU_VERSION 3 = r7p0
+mali MTK evironment
+mali MTK evironment
+mali MTK evironment
+mali MTK evironment
+-= project path  ../drivers/misc/mediatek/imgsensor/src/mt6735/camera_project/tinno6753_65t_m0/ =-
+imgsensor drv by platform imx135_mipi_raw gc2355_mipi_raw s5k2p8_mipi_raw
+imgsensor drv by project 
+../drivers/misc/mediatek/imgsensor/src/mt6753/camera_hw/Makefile:10: "CONFIG_TABLET_PROJECT:"
+../drivers/misc/mediatek/mach/mt6735/Makefile:34: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/misc/mediatek/mach/mt6735/mt_cpuxgpt.o
+  CC      drivers/misc/mediatek/mach/mt6735/mt_gpt.o
+  CC      drivers/misc/mediatek/mach/mt6735/ca53_timer.o
+  LD      drivers/misc/mediatek/mach/mt6735/built-in.o
+  LD      drivers/misc/mediatek/mach/built-in.o
+../drivers/misc/mediatek/ssw/Makefile:6: "SSW_DIR=../drivers/misc/mediatek/ssw/ssw_single_v2ssw_exist=y"
+../drivers/misc/mediatek/usb20/mt6735/Makefile:24: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/misc/mediatek/usb20/mt6735/usb20.o
+  CC      drivers/misc/mediatek/usb20/mt6735/usb20_phy.o
+  CC      drivers/misc/mediatek/usb20/mt6735/usb20_host.o
+../drivers/misc/mediatek/usb20/mt6735/usb20_host.c: In function 'musb_id_pin_work':
+../drivers/misc/mediatek/usb20/mt6735/usb20_host.c:368:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     extern int OTG_open;
+     ^
+  CC      drivers/misc/mediatek/usb20/mt6735/usb20_phy_debugfs.o
+  LD      drivers/misc/mediatek/usb20/mt6735/built-in.o
+  LD      drivers/misc/mediatek/usb20/built-in.o
+  LD      drivers/misc/mediatek/built-in.o
+  CC      drivers/misc/uid_cputime.o
+  CC      drivers/misc/sensor_state.o
+  LD      drivers/misc/built-in.o
+../drivers/usb/core/Makefile:18: ---add marco CONFIG_WIKO_UNIFY---
+  CC      drivers/usb/core/usb.o
+  CC      drivers/usb/core/hub.o
+  CC      drivers/usb/core/hcd.o
+  CC      drivers/usb/core/urb.o
+  CC      drivers/usb/core/message.o
+  CC      drivers/usb/core/driver.o
+  CC      drivers/usb/core/config.o
+  CC      drivers/usb/core/file.o
+  CC      drivers/usb/core/buffer.o
+  CC      drivers/usb/core/sysfs.o
+  CC      drivers/usb/core/endpoint.o
+  CC      drivers/usb/core/devio.o
+  CC      drivers/usb/core/notify.o
+  CC      drivers/usb/core/generic.o
+  CC      drivers/usb/core/quirks.o
+  CC      drivers/usb/core/devices.o
+  CC      drivers/usb/core/port.o
+  LD      drivers/usb/core/usbcore.o
+  LD      drivers/usb/core/built-in.o
+  LD      drivers/usb/built-in.o
+  LD      drivers/built-in.o
+  LINK    vmlinux
+  LD      vmlinux.o
+aarch64-linux-android-ld: cannot find libgcc.a: No such file or directory
+aarch64-linux-android-ld: cannot find libgcc.a: No such file or directory
+make[1]: *** [vmlinux] Error 1
+make[1]: Leaving directory `/home/android/DISK900G/kernel-3.18/out'
+make: *** [sub-make] Error 2
