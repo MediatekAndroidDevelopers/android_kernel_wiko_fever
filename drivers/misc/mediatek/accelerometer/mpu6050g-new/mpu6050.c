@@ -20,7 +20,7 @@
 
 static DEFINE_MUTEX(mpu6050_i2c_mutex);
 /* Maintain  cust info here */
-struct acc_hw accel_cust;
+static struct acc_hw accel_cust;
 static struct acc_hw *hw = &accel_cust;
 
 /* For  driver get cust info */
