@@ -36,6 +36,7 @@
 	|| defined(CONFIG_TOUCHSCREEN_SYNAPTICS_S3528) || defined(CONFIG_MTK_S7020)
 #include <linux/input/mt.h>
 #endif /* CONFIG_MTK_S3320 */
+
 /* for magnify velocity******************************************** */
 #define TOUCH_IOC_MAGIC 'A'
 
@@ -335,7 +336,6 @@ static struct miscdevice tpd_misc_device = {
 
 /* ********************************************** */
 /* #endif */
-
 
 /* function definitions */
 static int __init tpd_device_init(void);

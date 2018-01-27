@@ -28,6 +28,7 @@
 #include <asm/errno.h>
 #include <asm/esr.h>
 #include <asm/thread_info.h>
+#include <asm/asm-uaccess.h>
 #include <asm/unistd.h>
 
 /*
@@ -65,8 +66,13 @@
 #define BAD_FIQ		2
 #define BAD_ERROR	3
 
-	.macro	kernel_entry, el, regsize = 64
+	.macro kernel_ventry	label
+	.align 7
 	sub	sp, sp, #S_FRAME_SIZE - S_LR	// room for LR, SP, SPSR, ELR
+	b	\label
+	.endm
+
+	.macro	kernel_entry, el, regsize = 64
 	.if	\regsize == 32
 	mov	w0, w0				// zero upper 32 bits of x0
 	.endif
@@ -293,7 +299,8 @@ tsk	.req	x28		// current thread_info
  * Interrupt handling.
  */
 	.macro	irq_handler
-	ldr	x1, handle_arch_irq
+	adrp	x1, handle_arch_irq
+	ldr	x1, [x1, #:lo12:handle_arch_irq]
 	mov	x0, sp
 	blr	x1
 	.endm
@@ -306,31 +313,31 @@ tsk	.req	x28		// current thread_info
 
 	.align	11
 ENTRY(vectors)
-	ventry	el1_sync_invalid		// Synchronous EL1t
-	ventry	el1_irq_invalid			// IRQ EL1t
-	ventry	el1_fiq_invalid			// FIQ EL1t
-	ventry	el1_error_invalid		// Error EL1t
+	kernel_ventry	el1_sync_invalid		// Synchronous EL1t
+	kernel_ventry	el1_irq_invalid			// IRQ EL1t
+	kernel_ventry	el1_fiq_invalid			// FIQ EL1t
+	kernel_ventry	el1_error_invalid		// Error EL1t
 
-	ventry	el1_sync			// Synchronous EL1h
-	ventry	el1_irq				// IRQ EL1h
-	ventry	el1_fiq_invalid			// FIQ EL1h
-	ventry	el1_error_invalid		// Error EL1h
+	kernel_ventry	el1_sync			// Synchronous EL1h
+	kernel_ventry	el1_irq				// IRQ EL1h
+	kernel_ventry	el1_fiq_invalid			// FIQ EL1h
+	kernel_ventry	el1_error_invalid		// Error EL1h
 
-	ventry	el0_sync			// Synchronous 64-bit EL0
-	ventry	el0_irq				// IRQ 64-bit EL0
-	ventry	el0_fiq_invalid			// FIQ 64-bit EL0
-	ventry	el0_error_invalid		// Error 64-bit EL0
+	kernel_ventry	el0_sync			// Synchronous 64-bit EL0
+	kernel_ventry	el0_irq				// IRQ 64-bit EL0
+	kernel_ventry	el0_fiq_invalid			// FIQ 64-bit EL0
+	kernel_ventry	el0_error_invalid		// Error 64-bit EL0
 
 #ifdef CONFIG_COMPAT
-	ventry	el0_sync_compat			// Synchronous 32-bit EL0
-	ventry	el0_irq_compat			// IRQ 32-bit EL0
-	ventry	el0_fiq_invalid_compat		// FIQ 32-bit EL0
-	ventry	el0_error_invalid_compat	// Error 32-bit EL0
+	kernel_ventry	el0_sync_compat			// Synchronous 32-bit EL0
+	kernel_ventry	el0_irq_compat			// IRQ 32-bit EL0
+	kernel_ventry	el0_fiq_invalid_compat		// FIQ 32-bit EL0
+	kernel_ventry	el0_error_invalid_compat	// Error 32-bit EL0
 #else
-	ventry	el0_sync_invalid		// Synchronous 32-bit EL0
-	ventry	el0_irq_invalid			// IRQ 32-bit EL0
-	ventry	el0_fiq_invalid			// FIQ 32-bit EL0
-	ventry	el0_error_invalid		// Error 32-bit EL0
+	kernel_ventry	el0_sync_invalid		// Synchronous 32-bit EL0
+	kernel_ventry	el0_irq_invalid			// IRQ 32-bit EL0
+	kernel_ventry	el0_fiq_invalid			// FIQ 32-bit EL0
+	kernel_ventry	el0_error_invalid		// Error 32-bit EL0
 #endif
 END(vectors)
 
@@ -412,12 +419,13 @@ el1_da:
 	/*
 	 * Data abort handling
 	 */
-	mrs	x0, far_el1
+	mrs	x3, far_el1
 	enable_dbg
 	// re-enable interrupts if they were enabled in the aborted context
 	tbnz	x23, #7, 1f			// PSR_I_BIT
 	enable_irq
 1:
+	clear_address_tag x0, x3
 	mov	x2, sp				// struct pt_regs
 	bl	do_mem_abort
 
@@ -517,7 +525,7 @@ el0_sync:
 	cmp	x24, #ESR_EL1_EC_FP_EXC64	// FP/ASIMD exception
 	b.eq	el0_fpsimd_exc
 	cmp	x24, #ESR_EL1_EC_SYS64		// configurable trap
-	b.eq	el0_undef
+	b.eq	el0_sys
 	cmp	x24, #ESR_EL1_EC_SP_ALIGN	// stack alignment exception
 	b.eq	el0_sp_pc
 	cmp	x24, #ESR_EL1_EC_PC_ALIGN	// pc alignment exception
@@ -590,7 +598,7 @@ el0_da:
 	// enable interrupts before calling the main handler
 	enable_dbg_and_irq
 	ct_user_exit
-	bic	x0, x26, #(0xff << 56)
+	clear_address_tag x0, x26
 	mov	x1, x25
 	mov	x2, sp
 	bl	do_mem_abort
@@ -651,6 +659,16 @@ el0_undef:
 	mov	x0, sp
 	bl	do_undefinstr
 	b	ret_to_user
+el0_sys:
+	/*
+	 * System instructions, for trapped cache maintenance instructions
+	 */
+	enable_dbg_and_irq
+	ct_user_exit
+	mov	x0, x25
+	mov	x1, sp
+	bl	do_sysinstr
+	b	ret_to_user
 el0_dbg:
 	/*
 	 * Debug exception handling
@@ -669,7 +687,7 @@ el0_inv:
 	mov	x0, sp
 	mov	x1, #BAD_SYNC
 	mrs	x2, esr_el1
-	bl	bad_mode
+	bl	bad_el0_sync
 	b	ret_to_user
 ENDPROC(el0_sync)
 
@@ -855,6 +873,3 @@ ENTRY(sys_rt_sigreturn_wrapper)
 	mov	x0, sp
 	b	sys_rt_sigreturn
 ENDPROC(sys_rt_sigreturn_wrapper)
-
-ENTRY(handle_arch_irq)
-	.quad	0

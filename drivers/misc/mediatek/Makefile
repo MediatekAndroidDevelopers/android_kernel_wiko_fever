@@ -1,3 +1,14 @@
+export LYCONFIG_COMB_CHARGER_IC = MTK_SM5414_SUPPORT
+export LYCONFIG_EXCHANGE_BACK_FRONT_CAMERA_SUPPORT = yes
+export LYCONFIG_DUAL_CAMERA_BOTH_WORK_SUPPORT = yes
+export LYCONFIG_DUAL_CAMERA_USE_VCAMA_SUPPORT = yes
+export LYCONFIG_GPIO_FLASHLIGHT_SUPPORT = yes
+export LYCONFIG_COMB_SPEAKER_SUPPORT = CLASS_D
+export LYCONFIG_DETECT_HW_INFO_SUPPORT = yes
+export LYCONFIG_COMB_FINGERPRINT_SUPPORT = ET310
+export LYCONFIG_MTK_FLIP_HALL_SUPPORT = yes
+export CUSTOM_HAL_LENS = fm50af_f1c_gq sensordrive dw9714af_f5b_gq dummy_lens
+
 #$(call all-subdir-src-or-makefile)
 include $(srctree)/drivers/misc/mediatek/Makefile.custom
 subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/$(ARCH_MTK_PROJECT)
@@ -161,7 +172,6 @@ endif
 
 obj-$(CONFIG_MTK_MULTIBRIDGE_SUPPORT) += multibridge/
 obj-$(CONFIG_MEDIATEK_SOLUTION)	+= aee/
-obj-$(CONFIG_MTK_FMRADIO) += fmradio/
 obj-$(CONFIG_MTK_ATF_LOGGER)	+= atf_log/
 obj-$(CONFIG_MTK_MLOG) += mlog/
 obj-$(CONFIG_MTK_EMI_BWL)	+= emi_bwl/
@@ -190,9 +200,9 @@ ifneq ($(wildcard $(srctree)/drivers/misc/mediatek/cpu_stress/),)
 obj-$(CONFIG_MTK_CPU_STRESS)	+= cpu_stress/
 endif
 
-
 #Fingerprint start
 ifeq ($(CONFIG_TINNO_FINGER_PRINT_SUPPORT),y)
 obj-y += fingerprint/
 endif
 
+obj-$(CONFIG_PWR_LOSS_MTK_SPOH) += power-loss-test/

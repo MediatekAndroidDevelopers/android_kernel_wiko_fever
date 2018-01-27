@@ -120,7 +120,6 @@ uint32_t mc_get_new_handle(void)
 	struct mc_buffer *buffer;
 	struct mc_mmu_table *table;
 
-
 	mutex_lock(&ctx.cont_bufs_lock);
 retry:
 	handle = atomic_inc_return(&ctx.handle_counter);
@@ -141,7 +140,7 @@ retry:
 	/* here we assume table_lock is already taken. */
 	table = find_mmu_table(handle);
 	if (table != NULL)
-		goto retry;
+                goto retry;
 
 	mutex_unlock(&ctx.cont_bufs_lock);
 

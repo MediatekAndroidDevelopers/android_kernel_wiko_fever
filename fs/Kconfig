@@ -61,6 +61,8 @@ config FILE_LOCKING
           for filesystems like NFS and for the flock() system
           call. Disabling this option saves about 11k.
 
+source "fs/crypto/Kconfig"
+
 source "fs/notify/Kconfig"
 
 source "fs/quota/Kconfig"
@@ -89,6 +91,7 @@ if BLOCK
 menu "DOS/FAT/NT Filesystems"
 
 source "fs/fat/Kconfig"
+source "fs/exfat/Kconfig"
 source "fs/ntfs/Kconfig"
 
 endmenu
@@ -186,6 +189,7 @@ if MISC_FILESYSTEMS
 source "fs/adfs/Kconfig"
 source "fs/affs/Kconfig"
 source "fs/ecryptfs/Kconfig"
+source "fs/sdcardfs/Kconfig"
 source "fs/hfs/Kconfig"
 source "fs/hfsplus/Kconfig"
 source "fs/befs/Kconfig"
@@ -271,5 +275,12 @@ source "fs/nls/Kconfig"
 source "fs/dlm/Kconfig"
 source "fs/rawfs/Kconfig"
 source "fs/yaffs2/Kconfig"
+
+config DYNAMIC_FSYNC
+	bool "dynamic file sync control"
+	default n
+	help
+	  An experimental file sync control using pm suspend / resume drivers
+
 
 endmenu

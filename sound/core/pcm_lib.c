@@ -1633,7 +1633,7 @@ int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
-		if (snd_BUG_ON(err < 0))
+		if (err < 0)
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
@@ -1680,7 +1680,7 @@ int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
-		if (snd_BUG_ON(err < 0))
+		if (err < 0)
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
@@ -1847,9 +1847,6 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 		return;
 	runtime = substream->runtime;
 
-	if (runtime->transfer_ack_begin)
-		runtime->transfer_ack_begin(substream);
-
 	snd_pcm_stream_lock_irqsave(substream, flags);
 	if (!snd_pcm_running(substream) ||
 	    snd_pcm_update_hw_ptr0(substream, 1) < 0)
@@ -1858,10 +1855,8 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 	if (substream->timer_running)
 		snd_timer_interrupt(substream->timer, 1);
  _end:
-	snd_pcm_stream_unlock_irqrestore(substream, flags);
-	if (runtime->transfer_ack_end)
-		runtime->transfer_ack_end(substream);
 	kill_fasync(&runtime->fasync, SIGIO, POLL_IN);
+	snd_pcm_stream_unlock_irqrestore(substream, flags);
 }
 
 EXPORT_SYMBOL(snd_pcm_period_elapsed);

@@ -174,9 +174,6 @@ int ion_heap_pages_zero(struct page *page, size_t size, pgprot_t pgprot)
 
 void ion_heap_freelist_add(struct ion_heap *heap, struct ion_buffer *buffer)
 {
-	/* add by k, for mm heap to free mva */
-	if (heap->ops->add_freelist)
-		heap->ops->add_freelist(buffer);
 	spin_lock(&heap->free_lock);
 	list_add(&buffer->list, &heap->free_list);
 	heap->free_list_size += buffer->size;
@@ -342,8 +339,8 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 
 	switch ((int)heap_data->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
-		heap = ion_system_contig_heap_create(heap_data);
-		break;
+		pr_err("%s: Heap type is disabled: %d\n", __func__, heap_data->type);
+		return ERR_PTR(-EINVAL);
 	case ION_HEAP_TYPE_SYSTEM:
 		heap = ion_system_heap_create(heap_data);
 		break;
@@ -352,12 +349,6 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 		break;
 	case ION_HEAP_TYPE_CHUNK:
 		heap = ion_chunk_heap_create(heap_data);
-		break;
-	case ION_HEAP_TYPE_MULTIMEDIA:
-		heap = ion_mm_heap_create(heap_data);
-		break;
-	case ION_HEAP_TYPE_FB:
-		heap = ion_fb_heap_create(heap_data);
 		break;
 	case ION_HEAP_TYPE_DMA:
 		heap = ion_cma_heap_create(heap_data);
@@ -387,7 +378,7 @@ void ion_heap_destroy(struct ion_heap *heap)
 
 	switch ((int)heap->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
-		ion_system_contig_heap_destroy(heap);
+		pr_err("%s: Heap type is disabled: %d\n", __func__, heap->type);
 		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		ion_system_heap_destroy(heap);
@@ -397,12 +388,6 @@ void ion_heap_destroy(struct ion_heap *heap)
 		break;
 	case ION_HEAP_TYPE_CHUNK:
 		ion_chunk_heap_destroy(heap);
-		break;
-	case ION_HEAP_TYPE_MULTIMEDIA:
-		ion_mm_heap_destroy(heap);
-		break;
-	case ION_HEAP_TYPE_FB:
-		ion_fb_heap_destroy(heap);
 		break;
 	case ION_HEAP_TYPE_DMA:
 		ion_cma_heap_destroy(heap);

@@ -276,10 +276,6 @@ struct fts_ts_data {
 // Function Switchs: define to open,  comment to close
 #define FTS_GESTRUE_EN 							1
 #define MTK_EN 									1
-#define FTS_APK_DEBUG
-#define SYSFS_DEBUG
-#define TPD_AUTO_UPGRADE
-                                
 #define FT_TP									0
 //#define CONFIG_TOUCHPANEL_PROXIMITY_SENSOR
 //#if FT_ESD_PROTECT

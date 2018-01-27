@@ -153,8 +153,8 @@ static unsigned int get_constant_voltage(void)
 {
 	unsigned int cv;
 #ifdef CONFIG_MTK_BIF_SUPPORT
-	unsigned int vbat_bif;
-	unsigned int vbat_auxadc;
+	unsigned int vbat_bif = 0;
+	unsigned int vbat_auxadc = 0;
 	unsigned int vbat, bif_ok;
 	int i;
 #endif
@@ -169,14 +169,14 @@ static unsigned int get_constant_voltage(void)
 		if (vbat_bif < vbat_auxadc && vbat_bif != 0) {
 			vbat = vbat_bif;
 			bif_ok = 1;
-			battery_log(BAT_LOG_CRTI, "[BIF]using vbat_bif=%d\n with dV=%dmV", vbat,
+			battery_log(BAT_LOG_FULL, "[BIF]using vbat_bif=%d\n with dV=%dmV", vbat,
 				    (vbat_bif - vbat_auxadc));
 		} else {
 			vbat = vbat_auxadc;
 			if (i < 5)
 				i++;
 			else {
-				battery_log(BAT_LOG_CRTI,
+				battery_log(BAT_LOG_FULL,
 					    "[BIF]using vbat_auxadc=%d, check vbat_bif=%d\n", vbat,
 					    vbat_bif);
 				bif_ok = 0;
@@ -418,7 +418,7 @@ static void battery_pump_express_algorithm_start(void)
 	kal_bool pumped_volt;
 	unsigned int chr_ovp_en;
 
-	battery_log(BAT_LOG_CRTI, "[PE+][battery_pump_express_algorithm_start]start PEP...");
+	battery_log(BAT_LOG_FULL, "[PE+][battery_pump_express_algorithm_start]start PEP...");
 #endif
 
 	mutex_lock(&ta_mutex);
@@ -539,7 +539,7 @@ static void battery_pump_express_algorithm_start(void)
 
 		battery_log(BAT_LOG_CRTI, "[PE+]mtk_ta_algorithm() end\n");
 	} else {
-		battery_log(BAT_LOG_CRTI, "[PE+]Not a TA charger, bypass TA algorithm\n");
+		battery_log(BAT_LOG_FULL, "[PE+]Not a TA charger, bypass TA algorithm\n");
 #if defined(TA_12V_SUPPORT)
 		batt_cust_data.v_charger_max = V_CHARGER_MAX;
 		chr_ovp_en = 1;
@@ -1140,8 +1140,19 @@ static void pchr_turn_on_charging(void)
 
 #ifdef CONFIG_MTK_DYNAMIC_BAT_CV_SUPPORT
 			cv_voltage = get_constant_voltage() * 1000;
-			battery_log(BAT_LOG_CRTI, "[BATTERY][BIF] Setting CV to %d\n", cv_voltage / 1000);
-			#endif
+			battery_log(BAT_LOG_FULL, "[BATTERY][BIF] Setting CV to %d\n", cv_voltage / 1000);
+#endif
+
+#if defined(HIGH_BATTERY_VOLTAGE_SUPPORT)
+#if defined(LYCONFIG_HIGH_BATTERY_VOLTAGE_44_SUPPORT)
+	cv_voltage = BATTERY_VOLT_04_400000_V; // VBATREG = 4.4000V
+#else
+	//sm5414_reg_config_interface(0x0D,0x1A); // VBATREG = 4.3375V
+	cv_voltage = BATTERY_VOLT_04_350000_V; // VBATREG = 4.3500V
+#endif	
+#else
+	cv_voltage = BATTERY_VOLT_04_200000_V; // VBATREG = 4.2V
+#endif
 			battery_charging_control(CHARGING_CMD_SET_CV_VOLTAGE, &cv_voltage);
 
 			#if defined(CONFIG_MTK_HAFG_20)

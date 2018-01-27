@@ -23,6 +23,7 @@
 #include <linux/swap.h>
 #include <linux/init.h>
 #include <linux/bootmem.h>
+#include <linux/cache.h>
 #include <linux/mman.h>
 #include <linux/nodemask.h>
 #include <linux/initrd.h>
@@ -43,7 +44,7 @@
 
 #include "mm.h"
 
-phys_addr_t memstart_addr __read_mostly = 0;
+phys_addr_t memstart_addr __ro_after_init = 0;
 
 #ifdef CONFIG_BLK_DEV_INITRD
 static int __init early_initrd(char *p)
@@ -157,6 +158,8 @@ void __init arm64_memblock_init(void)
 	/* 4GB maximum for 32-bit only capable devices */
 	if (IS_ENABLED(CONFIG_ZONE_DMA))
 		dma_phys_limit = max_zone_dma_phys();
+
+	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
 	dma_contiguous_reserve(dma_phys_limit);
 
 	memblock_allow_resize();
@@ -179,7 +182,6 @@ void __init bootmem_init(void)
 	sparse_init();
 	zone_sizes_init(min, max);
 
-	high_memory = __va((max << PAGE_SHIFT) - 1) + 1;
 	max_pfn = max_low_pfn = max;
 }
 
@@ -288,8 +290,8 @@ void __init mem_init(void)
 		  "      .data : 0x%p" " - 0x%p" "   (%6ld KB)\n",
 		  MLG(VMALLOC_START, VMALLOC_END),
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
-		  MLG((unsigned long)vmemmap,
-		      (unsigned long)vmemmap + VMEMMAP_SIZE),
+		  MLG(VMEMMAP_START,
+		      VMEMMAP_START + VMEMMAP_SIZE),
 		  MLM((unsigned long)virt_to_page(PAGE_OFFSET),
 		      (unsigned long)virt_to_page(high_memory)),
 #endif
@@ -327,6 +329,7 @@ void __init mem_init(void)
 
 void free_initmem(void)
 {
+	fixup_init();
 	free_initmem_default(0);
 	free_alternatives_memory();
 }

@@ -81,6 +81,7 @@ struct kmem_cache {
 	int reserved;		/* Reserved bytes at the end of slabs */
 	const char *name;	/* Name (only for display!) */
 	struct list_head list;	/* List of slab caches */
+	int red_left_pad;	/* Left redzone padding size */
 #ifdef CONFIG_SYSFS
 	struct kobject kobj;	/* For sysfs */
 #endif
@@ -91,6 +92,10 @@ struct kmem_cache {
 	struct kset *memcg_kset;
 #endif
 #endif
+
+	unsigned long random;
+	unsigned long random_active;
+	unsigned long random_inactive;
 
 #ifdef CONFIG_NUMA
 	/*

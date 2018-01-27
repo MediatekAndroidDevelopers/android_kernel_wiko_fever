@@ -185,8 +185,8 @@ static int g_start_debug_thread;
 static int g_adc_init_flag;
 
 static u32 cali_reg;
-static u32 cali_oe;
-static u32 cali_ge;
+static s32 cali_oe;
+static s32 cali_ge;
 static u32 cali_ge_a;
 static u32 cali_oe_a;
 static u32 gain;
@@ -493,6 +493,16 @@ static void mt_auxadc_hal_resume(void)
 
 static int mt_auxadc_dump_register(char *buf)
 {
+	if (buf == NULL) {
+		pr_debug("[%s] Invalid input!!\n", __func__);
+		return 0;
+	}
+
+	if (strlen(buf) < 64) {
+		pr_debug("[%s] Invalid input!!\n", __func__);
+		return 0;
+	}
+
 	pr_debug("[auxadc]: AUXADC_CON0=%x\n", *(volatile u16 *)AUXADC_CON0);
 	pr_debug("[auxadc]: AUXADC_CON1=%x\n", *(volatile u16 *)AUXADC_CON1);
 	pr_debug("[auxadc]: AUXADC_CON2=%x\n", *(volatile u16 *)AUXADC_CON2);
@@ -1359,6 +1369,11 @@ static DEVICE_ATTR(AUXADC_Channel_Is_Calibration, 0664, show_AUXADC_Channel_Is_C
 
 static ssize_t show_AUXADC_register(struct device *dev, struct device_attribute *attr, char *buf)
 {
+	if (buf == NULL) {
+		pr_debug("[%s] Invalid input!!\n", __func__);
+		return 0;
+	}
+
 	return mt_auxadc_dump_register(buf);
 }
 
@@ -1378,6 +1393,11 @@ static ssize_t show_AUXADC_chanel(struct device *dev, struct device_attribute *a
 	int i = 0, data[4] = { 0, 0, 0, 0 };
 	char buf_temp[256];
 	int res = 0;
+
+	if (buf == NULL) {
+		pr_debug("[%s] Invalid input!!\n", __func__);
+		return 0;
+	}
 
 	for (i = 0; i < 5; i++) {
 		res = IMM_auxadc_GetOneChannelValue(i, data, NULL);
@@ -1417,12 +1437,9 @@ static int dbug_thread(void *unused)
 			} else
 				pr_debug("[adc_driver]: channel[%d] cali_voltage =%d\n", i,
 					 cali_voltage);
-
 			msleep(500);
-
 		}
 		msleep(500);
-
 	}
 	return 0;
 }
@@ -1431,22 +1448,31 @@ static int dbug_thread(void *unused)
 static ssize_t store_AUXADC_channel(struct device *dev, struct device_attribute *attr,
 				    const char *buf, size_t size)
 {
-	char start_flag;
-	int error;
+	int start_flag = 0;
+	int error = 0;
+	int ret = 0;
 
-	if (sscanf(buf, "%s", &start_flag) != 1) {
-		pr_debug("[adc_driver]: Invalid values\n");
-		return -EINVAL;
+	if (buf == NULL) {
+		pr_debug("[%s] Invalid input!!\n", __func__);
+		return 0;
 	}
-	pr_debug("[adc_driver] start flag =%d\n", start_flag);
-	g_start_debug_thread = start_flag;
-	if (1 == start_flag) {
-		thread = kthread_run(dbug_thread, 0, "AUXADC");
 
+	ret = kstrtoint(buf, sizeof(int), &start_flag);
+	if (ret < 0) {
+		pr_debug("[%s] Invalid invalues!!\n", __func__);
+		return 0;
+	}
+
+	pr_debug("[adc_driver] start flag =%d\n", start_flag);
+	if (start_flag) {
+		g_start_debug_thread = start_flag;
+		thread = kthread_run(dbug_thread, 0, "AUXADC");
 		if (IS_ERR(thread)) {
 			error = PTR_ERR(thread);
 			pr_debug("[adc_driver] failed to create kernel thread: %d\n", error);
 		}
+	} else {
+		pr_debug("[%s] Invalid input!!\n", __func__);
 	}
 
 	return size;
@@ -1611,7 +1637,7 @@ static int proc_utilization_show(struct seq_file *m, void *v)
 
 	seq_puts(m, "********** Auxadc status dump **********\n");
 
-	seq_printf(m, "reg=0x%x ADC_GE_A=0x%x ADC_OE_A=0x%x GE:0x%x OE:0x%x gain:0x%x\n",
+	seq_printf(m, "reg=0x%x ADC_GE_A=%d ADC_OE_A=%d GE:%d OE:%d gain:0x%x\n",
 	cali_reg, cali_ge_a, cali_oe_a, cali_ge, cali_oe, gain);
 #if defined(EFUSE_CALI)
 	seq_printf(m, "ADC_GE_A_MASK:0x%x ADC_GE_A_SHIFT:0x%x\n", ADC_GE_A_MASK, ADC_GE_A_SHIFT);
@@ -1814,9 +1840,7 @@ static int mt_auxadc_probe(struct platform_device *dev)
 
 	g_adc_init_flag = 1;
 
-	if (mt_auxadc_create_device_attr(adc_dev))
-		goto exit;
-exit:
+	mt_auxadc_create_device_attr(adc_dev);
 	return ret;
 }
 

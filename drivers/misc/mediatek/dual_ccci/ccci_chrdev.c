@@ -40,7 +40,7 @@ static unsigned int md_sbp_code_default;
 #endif
 
 #ifndef CONFIG_MODEM_FIRMWARE_PATH
-#define CONFIG_MODEM_FIRMWARE_PATH "/etc/firmware/"
+#define CONFIG_MODEM_FIRMWARE_PATH "/vendor/firmware/"
 #endif
 
 static char *type_str[] = {[modem_invalid] = "invalid",
@@ -1503,4 +1503,3 @@ void ccci_vir_chrdev_exit(int md_id)
 		vir_chr_ctlb[md_id] = NULL;
 	}
 }
-

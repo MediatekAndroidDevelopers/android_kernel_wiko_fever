@@ -314,12 +314,12 @@ uint32_t hal_tui_deactivate(void)
 		ret = TUI_DCI_ERR_OUT_OF_DISPLAY;
 	}
 
-
+	
 	trustedui_set_mask(TRUSTEDUI_MODE_VIDEO_SECURED|
 			   TRUSTEDUI_MODE_INPUT_SECURED);
 
 	pr_info("TDDP/[TUI-HAL] %s()\n", __func__);
-
+	
 	return ret;
 }
 
@@ -339,7 +339,7 @@ uint32_t hal_tui_activate(void)
 	/* Protect NWd */
 	trustedui_clear_mask(TRUSTEDUI_MODE_VIDEO_SECURED|
 			     TRUSTEDUI_MODE_INPUT_SECURED);
-
+	
 	pr_info("TDDP %s()\n", __func__);
 
 	/*
@@ -349,13 +349,13 @@ uint32_t hal_tui_activate(void)
 	 * on the appropriate framebuffer device
 	 */
 	/* Clear linux TUI flag */
-
+	
 	tpd_exit_tui();
 #if 0
     disable_clock(MT_CG_PERI_I2C0, "i2c");
     disable_clock(MT_CG_PERI_I2C1, "i2c");
     disable_clock(MT_CG_PERI_I2C2, "i2c");
-    disable_clock(MT_CG_PERI_I2C3, "i2c");
+    disable_clock(MT_CG_PERI_I2C3, "i2c");	
 	disable_clock(MT_CG_PERI_APDMA, "i2c");
 #endif
 	i2c_tui_disable_clock();
@@ -364,7 +364,7 @@ uint32_t hal_tui_activate(void)
 
 
 	trustedui_set_mode(TRUSTEDUI_MODE_OFF);
-
+	
 	return TUI_DCI_OK;
 }
 

@@ -1301,13 +1301,6 @@ MODULE_LICENSE ("GPL");
 static int __init ehci_hcd_init(void)
 {
 	int retval = 0;
-#ifdef CONFIG_WIKO_UNIFY
-    extern int OTG_open;
-    if (OTG_open == 0)
-    {
-        return 0;
-    }
-#endif
 
 	if (usb_disabled())
 		return -ENODEV;
