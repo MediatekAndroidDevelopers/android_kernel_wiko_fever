@@ -60,7 +60,7 @@ obj-$(CONFIG_CXL_BASE)		+= cxl/
 obj-$(CONFIG_UID_SYS_STATS) += uid_sys_stats.o
 obj-$(CONFIG_MEDIATEK_SOLUTION)	+= mediatek/
 
-WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/build.ini |grep ^ro.wiko.type)))
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/kernel/wiko/fever/build.ini |grep ^ro.wiko.type)))
 ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
 ccflags-y += -DCONFIG_WIKO_UNIFY
 obj-y += sensor_state.o 

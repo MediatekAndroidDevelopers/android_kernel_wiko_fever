@@ -33,7 +33,7 @@ ifeq ($(CONFIG_MTK_CCCI_DRIVER), y)
 ccflags-y += -DENABLE_CCCI_DRV_BUILDIN
 endif
 
-WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/build.ini |grep ^ro.wiko.type)))
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/kernel/wiko/fever/build.ini |grep ^ro.wiko.type)))
 ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
 ccflags-y += -DCONFIG_WIKO_UNIFY
 $(warning ---add macro CONFIG_WIKO_UNIFY---)

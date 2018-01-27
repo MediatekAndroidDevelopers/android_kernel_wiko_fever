@@ -33,7 +33,7 @@ ifeq ($(CONFIG_MTK_ECCCI_CLDMA), y)
 ccci-y += modem_cldma.o
 endif
 
-WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/build.ini |grep ^ro.wiko.type)))
+WIKO_UNIFY_DEF := $(strip $(subst ro.wiko.type =,,$(shell cat $(PWD)/kernel/wiko/fever/build.ini |grep ^ro.wiko.type)))
 ifeq ($(strip $(WIKO_UNIFY_DEF)),unify)
 ccflags-y += -DCONFIG_WIKO_UNIFY
 $(warning ---add marco CONFIG_WIKO_UNIFY---)
