@@ -69,11 +69,11 @@ static struct input_dev *TGesture_key_dev;
 extern int gBackLightLevel;
 u8 gTGesture = 0;
 
-static int enable_key = 1;
+//static int enable_key = 1;
 static s32 value_hall1_rev = 1;
 static s32 value_hall2_rev = 1;
-static s32 tgesture_state = 1; //open status
-int  bEnTGesture = 0;
+//static s32 tgesture_state = 1; //open status
+int  bEnTGesture = 0; //smartwake main switch, disabled by default
 char Tg_buf[16]={"-1"};
 static int TGesture_probe(struct platform_device *pdev);
 static int TGesture_remove(struct platform_device *pdev);
@@ -108,7 +108,7 @@ static const struct file_operations config_proc_ops = {
     .write = TGesture_config_write_proc,
 };
 
-#define TGesture_CONFIG_PROC_FILE     "tgeseture_config"
+#define TGesture_CONFIG_PROC_FILE     "tpgesture_config"
 #define TGesture_CONFIG_MAX_LENGTH       240
 
 static struct proc_dir_entry *tgesture_config_proc = NULL;
@@ -121,48 +121,42 @@ static char config[TGesture_CONFIG_MAX_LENGTH] = {0};
 /*----------------------------------------------------------------------------*/
 static ssize_t TGesture_show_state(struct device_driver *ddri, char *buf)
 {
-	APS_LOG("tgesture_state = %d\n", tgesture_state);
-	return snprintf(buf, PAGE_SIZE, "%d\n", tgesture_state);
+        return sprintf(buf, "%c\n", gTGesture);
 }
 /*----------------------------------------------------------------------------*/
-static ssize_t TGesture_show_key(struct device_driver *ddri, char *buf)
+static ssize_t TGesture_show_enable(struct device_driver *ddri, char *buf)
 {
-	return snprintf(buf, PAGE_SIZE, "%d\n", enable_key);
+	return snprintf(buf, PAGE_SIZE, "%d\n", bEnTGesture);
 }
 /*----------------------------------------------------------------------------*/
-static ssize_t TGesture_store_key(struct device_driver *ddri, const char *buf, size_t count)
+static ssize_t TGesture_store_enable(struct device_driver *ddri, const char *buf, size_t count)
 {
-    int enable, res;
-    u8 databuf[1];
+    int enable;
 	
 	if(1 == sscanf(buf, "%d", &enable))
 	{
-		enable_key = enable;
+		bEnTGesture = enable;
+		printk("bEnTGesture: %d\n",bEnTGesture);
 	}
 	else 
 	{
-		APS_ERR("invalid enable content: '%s', length = %d\n", buf, count);
+		APS_ERR("invalid enable content\n");
 	}
 	return count;    
 }
 /*---------------------------------------------------------------------------------------*/
 static DRIVER_ATTR(tgesture_state,     S_IWUSR | S_IRUGO, TGesture_show_state, NULL);
-static DRIVER_ATTR(key_tgesture_enable,    0664, TGesture_show_key, TGesture_store_key);
+static DRIVER_ATTR(tgesture_enable,    0664, TGesture_show_enable, TGesture_store_enable);
 /*----------------------------------------------------------------------------*/
 static struct driver_attribute *TGesture_attr_list[] = {
     &driver_attr_tgesture_state,
-    &driver_attr_key_tgesture_enable,
+    &driver_attr_tgesture_enable,
 };
-
-
-
-
 
 static ssize_t TGesture_config_read_proc(struct file *file, char __user *page, size_t size, loff_t *ppos)
 {
     char *ptr = page;
     char temp_data[2] = {'a','\0'};
-    int i;
     if (*ppos)  // CMD call again
     {
         return 0;

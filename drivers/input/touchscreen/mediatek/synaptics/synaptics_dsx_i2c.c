@@ -1491,6 +1491,7 @@ static int synaptics_rmi4_f11_abs_report(struct synaptics_rmi4_data *rmi4_data,
                                         input_report_key(SY_key_dev,KEY_SY_SENSOR, 1);
                                         input_report_key(SY_key_dev,KEY_SY_SENSOR, 0);
                                         input_sync(SY_key_dev);	
+					printk("TGesture, synaptics_rmi4_f11_abs_report:%d\n",gTGesture);
                                         //input_report_key(rmi4_data->input_dev, KEY_POWER, 1);
 			//input_sync(rmi4_data->input_dev);
 			//input_report_key(rmi4_data->input_dev, KEY_POWER, 0);
@@ -1738,7 +1739,7 @@ if (rmi4_data->sensor_sleep && rmi4_data->enable_wakeup_gesture) {
       }
       //yaohau.li end
 		
-                
+                printk("TGesture, synaptics_rmi4_f12_abs_report:%c\n",gTGesture);
                 return 0;
 	}
 

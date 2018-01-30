@@ -53,7 +53,7 @@ static int work_lock=0x00;
 #define FTS_SUPPORT_TRACK_ID
 
 #ifdef CONFIG_TGESTURE_FUNCTION
-#define KEYCODE_KEYTP 251       //BUG<REQ><BGAFM-80><20160227>add tp gesture for P4605;xiongdajun
+#define KEYCODE_KEYTP 202       //BUG<REQ><BGAFM-80><20160227>add tp gesture for P4605;xiongdajun
 extern u8 gTGesture;
 extern int bEnTGesture; 
 extern char Tg_buf[16];
@@ -269,7 +269,7 @@ static int tpd_gesture_handle(struct touch_info *cinfo)
 	#ifdef CONFIG_TGESTURE_FUNCTION
 	else if (0x46 == buf )
 	{ 	
-	       gTGesture = 's';
+	        gTGesture = 's';
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 1);                    
 		input_sync(tpd->dev);                    
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 0);                    
@@ -277,7 +277,7 @@ static int tpd_gesture_handle(struct touch_info *cinfo)
 	}
 	else if (0x32 == buf )
 	{ 	
-	       gTGesture = 'm';
+	        gTGesture = 'm';
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 1);                    
 		input_sync(tpd->dev);                    
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 0);                    
@@ -285,7 +285,7 @@ static int tpd_gesture_handle(struct touch_info *cinfo)
 	} 
 	else if (0x34 == buf )
 	{ 	
-	       gTGesture = 'c';
+	        gTGesture = 'c';
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 1);                    
 		input_sync(tpd->dev);                    
 		input_report_key(tpd->dev, KEYCODE_KEYTP, 0);                    
@@ -294,12 +294,13 @@ static int tpd_gesture_handle(struct touch_info *cinfo)
     //xuchunsheng add start for adding gesture type for 'o' with L5460 project in 08/29/2015
     else if(0x30 == buf)
     {
-          gTGesture = 'o';
+            gTGesture = 'o';
             input_report_key(tpd->dev, KEYCODE_KEYTP, 1);
             input_sync(tpd->dev);
             input_report_key(tpd->dev, KEYCODE_KEYTP, 0);
             input_sync(tpd->dev);
     }
+    printk("TGesture, tpd_gesture_handle:%c\n",gTGesture);
     //xuchunsheng add end in 08/28/2015
 	#endif
 	return 0;
